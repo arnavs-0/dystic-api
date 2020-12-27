@@ -6,6 +6,7 @@ from bs4 import BeautifulSoup
 
 template = 'https://www.indeed.com/jobs?q={}&l={}'
 
+
 def get_url(position, location):
     template = 'https://www.indeed.com/jobs?q={}&l={}'
     url = template.format(position, location)
@@ -27,7 +28,6 @@ def get_record(card):
     except AttributeError:
         remote = 'Not Remote'
 
-
     summary = card.find('div', 'summary').text.strip()
 
     date_post = card.find('span', 'date').text.strip()
@@ -38,16 +38,16 @@ def get_record(card):
         salary = card.find('span', 'salaryText').text.strip()
     except AttributeError:
         salary = ''
-    
+
     record = (job_title, job_url, company, location, remote, summary, date_post, date_today, salary)
     return record
 
 
-def main(position, location):
+def jobScrape(position, location):
     records = []
     url = get_url(position, location)
 
-    while True: 
+    while True:
         response = requests.get(url)
         soup = BeautifulSoup(response.text, 'html.parser')
         cards = soup.find_all('div', 'jobsearch-SerpJobCard')
@@ -61,7 +61,9 @@ def main(position, location):
         except AttributeError:
             break
 
-    results = json.dumps([{"JobTitle": x[0], "JobUrl": x[1], "Company": x[2], "Location": x[3], "Remote": x[4], "Summary": x[5], "PostDate": x[6], "ExtractDate": x[7], "Salary": x[8]} for x in records])
+    return json.dumps([{"JobTitle": x[0], "JobUrl": x[1], "Company": x[2], "Location": x[3], "Remote": x[4],
+                        "Summary": x[5], "PostDate": x[6], "ExtractDate": x[7], "Salary": x[8]} for x in records],
+                      indent=1)
 
 
-main('Android Developer', 'Detroit, MI')
+# print(jobScrape('Android Developer', 'Detroit, MI'))

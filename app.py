@@ -1,7 +1,19 @@
-from flask import Flask
+import json
+from flask import Flask, request, jsonify, Response
+from jobScrape_script import *
+
 app = Flask(__name__)
-@app.route('/jobs', methods=['GET', 'POST'])
+app.config['JSONIFY_PRETTYPRINT_REGULAR'] = True
+
+@app.route('/jobs', methods=["GET"])
 def welcome():
-    return "Hello World!"
+    if request.method == "GET":
+        data = jobScrape('Android Developer', 'Detroit, MI')
+        # print(type(data))
+        return data
+    else:
+        return "Please call this URL as an API"
+
+
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=3500)
+    app.run(debug=True)
