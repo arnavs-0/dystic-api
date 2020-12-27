@@ -4,20 +4,20 @@ import requests
 from requests.api import get
 from bs4 import BeautifulSoup
 
-template = 'https://www.indeed.com/jobs?q={}&l={}'
+template = 'https://{}.indeed.com/jobs?q={}&l={}'
 
 
-def get_url(position, location):
-    template = 'https://www.indeed.com/jobs?q={}&l={}'
-    url = template.format(position, location)
+def get_url(country, position, location):
+    template = 'https://{}.indeed.com/jobs?q={}&l={}'
+    url = template.format(country, position, location)
     return url
 
 
-def get_record(card):
+def get_record(country, card):
     atag = card.h2.a
     job_title = atag.get('title')
 
-    job_url = 'https://www.indeed.com' + atag.get('href')
+    job_url = 'https://' + country + '.indeed.com' + atag.get('href')
 
     company = card.find('span', 'company').text.strip()
 
@@ -43,9 +43,9 @@ def get_record(card):
     return record
 
 
-def jobScrape(position, location):
+def intlScrape(country, position, location):
     records = []
-    url = get_url(position, location)
+    url = get_url(country, position, location)
 
     while True:
         response = requests.get(url)
@@ -53,11 +53,11 @@ def jobScrape(position, location):
         cards = soup.find_all('div', 'jobsearch-SerpJobCard')
 
         for card in cards:
-            record = get_record(card)
+            record = get_record(country, card)
             records.append(record)
 
         try:
-            url = 'https://www.indeed.com' + soup.find('a', {'aria-label': 'Next'}).get('href')
+            url = 'https://' + country + '.indeed.com' + soup.find('a', {'aria-label': 'Next'}).get('href')
         except AttributeError:
             break
 
