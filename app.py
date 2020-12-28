@@ -6,6 +6,7 @@ from intlScrape_script import *
 app = Flask(__name__)
 app.config['JSONIFY_PRETTYPRINT_REGULAR'] = True
 
+
 @app.route('/jobs', methods=["GET"])
 def welcome():
     if request.method == "GET":
@@ -17,6 +18,7 @@ def welcome():
         return data
     else:
         return "Please call this URL as an API"
+
 
 @app.route('/intl', methods=["GET"])
 def intl():
@@ -30,6 +32,7 @@ def intl():
         return data
     else:
         return "Please call this URL as an API"
+
 
 @app.route('/')
 def home():
