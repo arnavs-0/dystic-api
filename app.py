@@ -16,10 +16,9 @@ def welcome():
             jobLocation = request.args['jl']
 
             data = jobScrape(jobTitle, jobLocation)
-            # print(type(data))
             return data
         else:
-            return '''{"success": false, "reason": "jt (job type), jl (job location) is required"}'''
+            return json.dumps({"success": False, "reason": "jt (job type), jl (job location) is required"})
     else:
         return "Please call this URL as an API"
 
@@ -36,9 +35,11 @@ def intl():
             # print(type(data))
             return data
         else:
-             return '''{"success": false, "reason": "jt (job type), jl (job location), and jc (job country) is required"}''' 
+            return json.dumps({"success": False, "reason": "jt (job type), jl (job location) is required"})
     else:
         return "Please call this URL as an API"
+
+
 @app.route('/details', methods=["GET"])
 def details():
     if request.method == "GET":
@@ -47,9 +48,10 @@ def details():
             data = get_details(url)
             return data
         else:
-            return '''{"success": false, "reason": "job url (ju) is required"}'''
+            return json.dumps({"success": False, "reason": "jt (job type), jl (job location) is required"})
     else:
         return "Must be a GET request"
+
 
 @app.route('/')
 def home():

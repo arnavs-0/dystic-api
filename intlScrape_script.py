@@ -61,6 +61,10 @@ def intlScrape(country, position, location):
         except AttributeError:
             break
 
-    return json.dumps([{"JobTitle": x[0], "JobUrl": x[1], "Company": x[2], "Location": x[3], "Remote": x[4],
-                        "Summary": x[5], "PostDate": x[6], "ExtractDate": x[7], "Salary": x[8]} for x in records],
-                      indent=1)
+    if records:
+        return json.dumps(
+            [{"statusCode": 200, "JobTitle": x[0], "JobUrl": x[1], "Company": x[2], "Location": x[3], "Remote": x[4],
+              "Summary": x[5], "PostDate": x[6], "ExtractDate": x[7], "Salary": x[8]} for x in records],
+            indent=1)
+    else:
+        return json.dumps({"success": False, "statusCode": 400, "reason": "No job was found with given request"})
