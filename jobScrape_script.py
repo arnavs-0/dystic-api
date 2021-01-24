@@ -3,6 +3,7 @@ import json
 import requests
 from requests.api import get
 from bs4 import BeautifulSoup
+from keywords import match
 
 template = 'https://www.indeed.com/jobs?q={}&l={}'
 
@@ -38,9 +39,13 @@ def get_record(card):
         salary = card.find('span', 'salaryText').text.strip()
     except AttributeError:
         salary = ''
-
-    record = (job_title, job_url, company, location, remote, summary, date_post, date_today, salary)
-    return record
+#TODO Fix this record thing which returns null
+    if (match(job_title, 'physical') or match(summary, 'physical')):
+        record = (job_title, job_url, company, location, remote, summary, date_post, date_today, salary)
+        return record
+    else:
+        record = ('n/a', 'n/a', 'n/a', 'n/a', 'n/a', 'n/a', 'n/a', 'n/a', 'n/a')
+        return record
 
 
 def jobScrape(position, location):
