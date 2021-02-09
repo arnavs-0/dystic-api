@@ -165,7 +165,7 @@ mental = ['Analyst',
 
 
 def match(name, type_job):
-    if any(x in type_job for x in name):
+    if any(x.lower() in str(type_job.lower()) for x in name):
         return True
     else:
         return False
