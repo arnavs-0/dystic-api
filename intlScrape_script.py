@@ -1,7 +1,7 @@
-from datetime import datetime
 import json
+from datetime import datetime
+
 import requests
-from requests.api import get
 from bs4 import BeautifulSoup
 
 template = 'https://{}.indeed.com/jobs?q={}&l={}'
@@ -13,6 +13,7 @@ def get_url(country, position, location):
     return url
 
 
+# noinspection DuplicatedCode
 def get_record(country, card):
     atag = card.h2.a
     job_title = atag.get('title')

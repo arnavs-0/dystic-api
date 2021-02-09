@@ -1,5 +1,4 @@
-import json
-from flask import Flask, request, Response
+from flask import Flask, request
 from jobScrape_script import *
 from intlScrape_script import *
 from moreDetailsScrape_script import *
@@ -7,15 +6,16 @@ from moreDetailsScrape_script import *
 app = Flask(__name__)
 app.config['JSONIFY_PRETTYPRINT_REGULAR'] = True
 
-
+# http://127.0.0.1:5000/jobs?jt=construction&jl=michigan&jn=physical
 @app.route('/jobs', methods=["GET"])
 def welcome():
     if request.method == "GET":
-        if 'jt' in request.args and 'jl' in request.args:
+        if 'jt' in request.args and 'jl' in request.args and 'jn':
             jobTitle = request.args['jt']
             jobLocation = request.args['jl']
+            jobType = request.args['jn']
 
-            data = jobScrape(jobTitle, jobLocation)
+            data = jobScrape(jobTitle, jobLocation, jobType)
             return data
         else:
             return json.dumps({"success": False, "reason": "jt (job type), jl (job location) is required"})

@@ -14,7 +14,7 @@ def get_url(position, location):
     return url
 
 
-def get_record(card):
+def get_record(card, jobtype):
     atag = card.h2.a
     job_title = atag.get('title')
 
@@ -39,8 +39,8 @@ def get_record(card):
         salary = card.find('span', 'salaryText').text.strip()
     except AttributeError:
         salary = ''
-#TODO Fix this record thing which returns null
-    if (match(job_title, 'physical') or match(summary, 'physical')):
+    # TODO Fix this record thing which returns null
+    if match(job_title, jobtype) or match(summary, jobtype):
         record = (job_title, job_url, company, location, remote, summary, date_post, date_today, salary)
         return record
     else:
@@ -48,7 +48,7 @@ def get_record(card):
         return record
 
 
-def jobScrape(position, location):
+def jobScrape(position, location, jobtype):
     records = []
     url = get_url(position, location)
 
@@ -58,7 +58,7 @@ def jobScrape(position, location):
         cards = soup.find_all('div', 'jobsearch-SerpJobCard')
 
         for card in cards:
-            record = get_record(card)
+            record = get_record(card, jobtype)
             records.append(record)
 
         try:
