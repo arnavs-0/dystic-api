@@ -1,15 +1,24 @@
 from datetime import datetime
 import json
 import requests
+from requests.adapters import HTTPAdapter
+from requests.packages.urllib3.util.retry import Retry
 from requests.api import get
 from bs4 import BeautifulSoup
 from keywords import match
+from getCountry import getCountryCode
+from citiesDictionary import getUSCities
 
-template = 'https://www.indeed.com/jobs?q={}&l={}'
+defaultCountryCode = getCountryCode().lower()
+allUSCities = getUSCities()
+
+if defaultCountryCode == 'usa':
+    template = 'https://www.indeed.com/jobs?q={}&l={}'
+else:
+    template = 'https://' + defaultCountryCode + '.indeed.com/jobs?q={}&l={}'
 
 
 def get_url(position, location):
-    template = 'https://www.indeed.com/jobs?q={}&l={}'
     url = template.format(position, location)
     return url
 
@@ -18,7 +27,12 @@ def get_record(card, jobtype):
     atag = card.h2.a
     job_title = atag.get('title')
 
-    job_url = 'https://www.indeed.com' + atag.get('href')
+    if defaultCountryCode == 'usa':
+        urlHead = 'https://www.indeed.com'
+    else:
+        urlHead = 'https://www.' + defaultCountryCode + '.indeed.com'
+
+    job_url = urlHead + atag.get('href')
 
     company = card.find('span', 'company').text.strip()
 
@@ -40,12 +54,12 @@ def get_record(card, jobtype):
     except AttributeError:
         salary = ''
     # TODO Fix this record thing which returns null
-    if match(job_title, jobtype) or match(summary, jobtype):
+    if match(jobtype, job_title) or match(jobtype, summary):
         record = (job_title, job_url, company, location, remote, summary, date_post, date_today, salary)
-        return record
     else:
         record = ('n/a', 'n/a', 'n/a', 'n/a', 'n/a', 'n/a', 'n/a', 'n/a', 'n/a')
-        return record
+
+    return record
 
 
 def jobScrape(position, location, jobtype):
@@ -53,18 +67,27 @@ def jobScrape(position, location, jobtype):
     url = get_url(position, location)
 
     while True:
-        response = requests.get(url)
-        soup = BeautifulSoup(response.text, 'html.parser')
-        cards = soup.find_all('div', 'jobsearch-SerpJobCard')
-
-        for card in cards:
-            record = get_record(card, jobtype)
-            records.append(record)
-
         try:
-            url = 'https://www.indeed.com' + soup.find('a', {'aria-label': 'Next'}).get('href')
-        except AttributeError:
-            break
+            response = requests.get(url)
+            soup = BeautifulSoup(response.text, 'html.parser')
+            cards = soup.find_all('div', 'jobsearch-SerpJobCard')
+
+            for card in cards:
+                record = get_record(card, jobtype)
+                records.append(record)
+
+            try:
+                if defaultCountryCode == 'usa':
+                    urlHead = 'https://www.indeed.com'
+                else:
+                    urlHead = 'https://' + defaultCountryCode + '.indeed.com'
+
+                url = urlHead + soup.find('a', {'aria-label': 'Next'}).get('href')
+            except AttributeError:
+                break
+        except requests.exceptions.ConnectionError as e:
+            return json.dumps({"success": False, "statusCode": 500, "reason": "Connection refused by the server",
+                               "solution": "Please try again in a few minutes", "details": str(e)})
 
     if records:
         return json.dumps(
