@@ -1,4 +1,4 @@
-from flask import Flask, request, redirect
+from flask import Flask, request, redirect, jsonify
 from jobScrape_script import *
 # from intlScrape_script import *
 from moreDetailsScrape_script import *
@@ -17,9 +17,9 @@ def welcome():
         jobType = request.args['jn']
         if 'jt' in request.args and 'jl' in request.args and 'jn':
             data = jobScrape(jobTitle, jobLocation, jobType)
-            return data
+            return json.loads(data), int(json.loads(data)['statusCode'])
         else:
-            return json.dumps({"success": False, "reason": "jt (job type), jl (job location) is required"})
+            return json.dumps({"success": False, "reason": "jt (job type), jl (job location) is required"}), 500
     else:
         return "Please call this URL as an API"
 
