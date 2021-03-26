@@ -12,10 +12,11 @@ from citiesDictionary import getUSCities
 defaultCountryCode = getCountryCode().lower()
 allUSCities = getUSCities()
 
-if defaultCountryCode == 'usa':
+if defaultCountryCode == 'us':
     template = 'https://www.indeed.com/jobs?q={}&l={}'
 else:
     template = 'https://' + defaultCountryCode + '.indeed.com/jobs?q={}&l={}'
+template = 'https://www.indeed.com/jobs?q={}&l={}'
 
 
 def get_url(position, location):
@@ -27,8 +28,8 @@ def get_record(card, jobtype):
     atag = card.h2.a
     job_title = atag.get('title')
 
-    if defaultCountryCode == 'usa':
-        urlHead = 'https://www.indeed.com'
+    if defaultCountryCode == 'us':
+        urlHead = 'https://indeed.com'
     else:
         urlHead = 'https://www.' + defaultCountryCode + '.indeed.com'
 
@@ -68,7 +69,12 @@ def jobScrape(position, location, jobtype):
 
     while True:
         try:
-            response = requests.get(url)
+            session = requests.Session()
+            retry = Retry(connect=3, backoff_factor=0.5)
+            adapter = HTTPAdapter(max_retries=retry)
+            session.mount('http://', adapter)
+            session.mount('https://', adapter)
+            response = session.get(url, verify=False)
             soup = BeautifulSoup(response.text, 'html.parser')
             cards = soup.find_all('div', 'jobsearch-SerpJobCard')
 
@@ -77,7 +83,7 @@ def jobScrape(position, location, jobtype):
                 records.append(record)
 
             try:
-                if defaultCountryCode == 'usa':
+                if defaultCountryCode == 'us':
                     urlHead = 'https://www.indeed.com'
                 else:
                     urlHead = 'https://' + defaultCountryCode + '.indeed.com'
