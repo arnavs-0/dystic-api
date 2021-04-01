@@ -1,5 +1,6 @@
 from datetime import datetime
 import json
+import flask
 import requests
 from requests.adapters import HTTPAdapter
 from requests.packages.urllib3.util.retry import Retry
@@ -8,14 +9,16 @@ from bs4 import BeautifulSoup
 from keywords import match
 from getCountry import getCountryCode
 from citiesDictionary import getUSCities
+import sys
+import geocoder
 
 defaultCountryCode = getCountryCode().lower()
 allUSCities = getUSCities()
 
-if defaultCountryCode == 'us':
-    template = 'https://www.indeed.com/jobs?q={}&l={}'
-else:
-    template = 'https://' + defaultCountryCode + '.indeed.com/jobs?q={}&l={}'
+# if defaultCountryCode == 'us':
+#     template = 'https://www.indeed.com/jobs?q={}&l={}'
+# else:
+#     template = 'https://' + defaultCountryCode + '.indeed.com/jobs?q={}&l={}'
 template = 'https://www.indeed.com/jobs?q={}&l={}'
 
 
@@ -34,10 +37,13 @@ def get_record(card, jobtype):
         urlHead = 'https://www.' + defaultCountryCode + '.indeed.com'
 
     job_url = urlHead + atag.get('href')
+    print('Hello world!', file=sys.stderr)
 
     company = card.find('span', 'company').text.strip()
 
     location = card.find('div', 'recJobLoc').get('data-rc-loc')
+    g = geocoder.arcgis(location)
+    latlng = g.latlng
 
     try:
         remote = card.find('span', 'remote').text.strip()
@@ -56,7 +62,7 @@ def get_record(card, jobtype):
         salary = ''
     # TODO Fix this record thing which returns null
     if match(jobtype, job_title) or match(jobtype, summary):
-        record = (job_title, job_url, company, location, remote, summary, date_post, date_today, salary)
+        record = (job_title, job_url, company, location, remote, summary, date_post, date_today, salary, latlng)
     else:
         record = ('n/a', 'n/a', 'n/a', 'n/a', 'n/a', 'n/a', 'n/a', 'n/a', 'n/a')
 
@@ -69,36 +75,32 @@ def jobScrape(position, location, jobtype):
 
     while True:
         try:
-            session = requests.Session()
-            retry = Retry(connect=3, backoff_factor=0.5)
-            adapter = HTTPAdapter(max_retries=retry)
-            session.mount('http://', adapter)
-            session.mount('https://', adapter)
-            response = session.get(url, verify=False)
+           
+            response = requests.get(url)
+            print(url)
             soup = BeautifulSoup(response.text, 'html.parser')
             cards = soup.find_all('div', 'jobsearch-SerpJobCard')
 
             for card in cards:
                 record = get_record(card, jobtype)
                 records.append(record)
+            break
 
-            try:
-                if defaultCountryCode == 'us':
-                    urlHead = 'https://www.indeed.com'
-                else:
-                    urlHead = 'https://' + defaultCountryCode + '.indeed.com'
+            # try:
+            #     if defaultCountryCode == 'us':
+            #         urlHead = 'https://indeed.com'
+            #     else:
+            #         urlHead = 'https://' + defaultCountryCode + '.indeed.com'
 
-                url = urlHead + soup.find('a', {'aria-label': 'Next'}).get('href')
-            except AttributeError:
-                break
+            #     url = urlHead + soup.find('a', {'aria-label': 'Next'}).get('href')
+            # except AttributeError:
+            #     break
         except requests.exceptions.ConnectionError as e:
             return json.dumps({"success": False, "statusCode": 500, "reason": "Connection refused by the server",
                                "solution": "Please try again in a few minutes", "details": str(e)})
 
-    if records:
-        return json.dumps(
-            [{"statusCode": 200, "JobTitle": x[0], "JobUrl": x[1], "Company": x[2], "Location": x[3], "Remote": x[4],
-              "Summary": x[5], "PostDate": x[6], "ExtractDate": x[7], "Salary": x[8]} for x in records],
-            indent=1)
-    else:
-        return json.dumps({"success": False, "statusCode": 400, "reason": "No job was found with given request"})
+   
+    return json.dumps(
+        [{"statusCode": 200, "JobTitle": x[0], "JobUrl": x[1], "Company": x[2], "Location": x[3], "Remote": x[4],
+            "Summary": x[5], "PostDate": x[6], "ExtractDate": x[7], "Salary": x[8], "LatLng": x[9]} for x in records],
+        indent=1)
