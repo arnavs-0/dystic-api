@@ -4,8 +4,11 @@ from urllib.parse import unquote
 # from intlScrape_script import *
 from moreDetailsScrape_script import *
 from getCountry import getCountryCode
+from flask_cors import CORS
+
 
 app = Flask(__name__)
+CORS(app)
 app.config['JSONIFY_PRETTYPRINT_REGULAR'] = True
 
 

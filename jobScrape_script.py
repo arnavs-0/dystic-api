@@ -12,6 +12,7 @@ from citiesDictionary import getUSCities
 import sys
 import geocoder
 
+
 defaultCountryCode = getCountryCode().lower()
 allUSCities = getUSCities()
 
