@@ -1,17 +1,29 @@
-<h1 align="center">Welcome to dystic-api</h1>
+<p align="center">
+  <a href="https://dystic.web.app">
+    <img alt="dystic" src="https://media.discordapp.net/attachments/823366296795480075/830850763785633872/logo192.png" width="60" />
+  </a>
+</p>
+<h1 align="center">
+  dystic API
+</h1>
+
+<h3 align="center">
+  Making Job Search More Accessible
+</h3>
+<p align="center">
+ dystic is an open source job search platform. This API is an Indeed Scraper to Find Jobs that suit a certain keywords given a condition. Please note that this scraper is used for educational purposes. Please use at your own risk. See License for more details.
+</p>
+
+
+<p align="center">
+  <img src="https://media.discordapp.net/attachments/754861953947795469/830857473111228506/unknown.png?width=1114&height=670">
+</p>
 <p>
   <img alt="Version" src="https://img.shields.io/badge/version-1.0.0-blue.svg?cacheSeconds=2592000" />
   <a href="#" target="_blank">
     <img alt="License: MIT" src="https://img.shields.io/badge/License-MIT-yellow.svg" />
   </a>
 </p>
-
-![Image of Logo](https://media.discordapp.net/attachments/746184734111039670/746726388719026237/dystic.png)
-![Image of Slogan](https://media.discordapp.net/attachments/746184734111039670/746726390623371414/making_job_search_more_accessible..png)
-
-
-> An Indeed Scraper to Find Jobs that suit a certain keywords given a condition. Please note that this scraper
-> is used for educational purposes. Please use at your own risk. See License for more details.
 
 ### 🏠 [Homepage](https://github.com/arnavs-0/dystic-api)
 
