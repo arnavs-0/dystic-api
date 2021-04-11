@@ -1,17 +1,14 @@
-from datetime import datetime
 import json
-import flask
-import requests
-from requests.adapters import HTTPAdapter
-from requests.packages.urllib3.util.retry import Retry
-from requests.api import get
-from bs4 import BeautifulSoup
-from keywords import match
-from getCountry import getCountryCode
-from citiesDictionary import getUSCities
 import sys
-import geocoder
+from datetime import datetime
 
+import geocoder
+import requests
+from bs4 import BeautifulSoup
+
+from citiesDictionary import getUSCities
+from getCountry import getCountryCode
+from keywords import match
 
 defaultCountryCode = getCountryCode().lower()
 allUSCities = getUSCities()

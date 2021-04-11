@@ -1,9 +1,10 @@
 import json
+
 import requests
-from requests.api import get
 from bs4 import BeautifulSoup
 
-def get_details(url): 
+
+def get_details(url):
     response = requests.get(url)
     soup = BeautifulSoup(response.text, 'html.parser')
     
