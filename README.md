@@ -41,6 +41,9 @@ There are 3 Parameters taken,
 ```jl``` which is a location (So far US Cities and States are supported) and
 ```jn``` parameter which is able to filter jobs based on conditions (we are hoping to make this parameter optional in the near future)
 
+**Note**
+
+If you receive an empty response that generally means there is a captcha blocking the request. As a workaround go to Indeed's website and finish the captcha challenge
 
 ## Future Plans
 
