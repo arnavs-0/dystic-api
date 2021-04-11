@@ -10,7 +10,7 @@
 ![Image of Slogan](https://media.discordapp.net/attachments/746184734111039670/746726390623371414/making_job_search_more_accessible..png)
 
 
-> An Indeed Scraper to Find Jobs the suit certain keywords given a condition. Please note that this scraper
+> An Indeed Scraper to Find Jobs that suit a certain keywords given a condition. Please note that this scraper
 > is used for educational purposes. Please use at your own risk. See License for more details.
 
 ### 🏠 [Homepage](https://github.com/arnavs-0/dystic-api)
